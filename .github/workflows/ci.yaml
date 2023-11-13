@@ -1,0 +1,38 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - erlang_otp: 25.3.2.5
+            elixir: 1.15.4
+            check: true
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Install Elixir
+        uses: erlef/setup-beam@v1
+        with:
+          otp-version: ${{ matrix.erlang_otp }}
+          elixir-version: ${{ matrix.elixir }}
+      - name: Install dependencies
+        run: |
+          mix local.hex --force
+          mix deps.get
+      - name: Check unused dependencies
+        run: mix deps.unlock --check-unused
+        if: matrix.check
+      - name: Check code format
+        run: mix format --check-formatted
+        if: matrix.check
+      - name: Check compilation warnings
+        run: mix compile --warnings-as-errors
+        if: matrix.check
+      - name: Run tests
+        run: mix test
