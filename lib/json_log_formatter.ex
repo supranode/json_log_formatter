@@ -50,17 +50,12 @@ defmodule JSONLogFormatter do
   def format(level, message, timestamp, metadata) do
     timestamp = format_timestamp(timestamp)
     {metadata, error_messages} = format_metadata(metadata)
+    messages = message |> IO.chardata_to_string() |> to_lines()
 
-    try do
-      messages = message |> IO.chardata_to_string() |> to_lines()
-
-      [
-        Enum.map(error_messages, &encode_log_entry(:error, &1, timestamp, metadata)),
-        Enum.map(messages, &encode_log_entry(level, &1, timestamp, metadata))
-      ]
-    rescue
-      _ -> ~s({"level":"error","message":"Bad log","timestamp":"#{timestamp}"}\n)
-    end
+    [
+      Enum.map(error_messages, &encode_log_entry(:error, &1, timestamp, metadata)),
+      Enum.map(messages, &encode_log_entry(level, &1, timestamp, metadata))
+    ]
   end
 
   defp encode_log_entry(level, message, timestamp, metadata) do

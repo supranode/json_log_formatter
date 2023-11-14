@@ -109,9 +109,10 @@ defmodule JSONLogFormatterTest do
            ]
   end
 
-  test "format/4 logs an error message if the message is not chardata" do
-    assert [%{"message" => "Bad log", "level" => "error", "timestamp" => _}] =
-             format(:info, :no_chardata)
+  test "format/4 raises if the message is not chardata" do
+    assert_raise FunctionClauseError, ~r[chardata_to_string/1], fn ->
+      format(:info, :no_chardata)
+    end
   end
 
   defmodule NonJSONSerializableStruct do
