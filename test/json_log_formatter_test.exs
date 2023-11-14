@@ -4,10 +4,10 @@ defmodule JSONLogFormatterTest do
   test "format/4 formats log messages as JSON one-liners" do
     metadata = [
       expires_on: ~D[1987-05-06],
-      module: Test,
-      function: "test/2",
-      file: "test.exs",
-      line: 15
+      mfa: {__MODULE__, :test, 2},
+      file: ~c"test.exs",
+      line: 15,
+      pid: self()
     ]
 
     assert format(:info, "Hello world!", {{2019, 10, 11}, {13, 24, 56, 0}}, metadata) == [
@@ -17,9 +17,9 @@ defmodule JSONLogFormatterTest do
                "expires_on" => "1987-05-06",
                "message" => "Hello world!",
                "file" => "test.exs",
-               "function" => "test/2",
                "line" => 15,
-               "module" => "Elixir.Test"
+               "mfa" => "{JSONLogFormatterTest, :test, 2}",
+               "pid" => inspect(self())
              }
            ]
   end
@@ -115,34 +115,26 @@ defmodule JSONLogFormatterTest do
     end
   end
 
-  defmodule NonJSONSerializableStruct do
-    defstruct [:value]
+  defmodule User do
+    defstruct [:name]
   end
 
-  test "format/4 logs an error message if the metadata contains a non JSON serializable value" do
+  test "format/4 transforms non JSON serializable values into strings using inspect/2" do
     metadata = [
-      resp: {:ok, "This cannot be encoded to JSON"},
+      result: {:ok, "This cannot be encoded to JSON"},
       env: "test",
-      data: %NonJSONSerializableStruct{value: false}
+      user: %User{name: "Fernando"},
+      pid: self()
     ]
 
     assert format(:info, "Hello world!", {{2019, 10, 11}, {13, 24, 56, 0}}, metadata) == [
              %{
-               "level" => "error",
-               "timestamp" => "2019-10-11T13:24:56Z",
-               "env" => "test",
-               "message" => "Logger metadata contains a non JSON serializable value in key :data"
-             },
-             %{
-               "level" => "error",
-               "timestamp" => "2019-10-11T13:24:56Z",
-               "env" => "test",
-               "message" => "Logger metadata contains a non JSON serializable value in key :resp"
-             },
-             %{
                "level" => "info",
                "timestamp" => "2019-10-11T13:24:56Z",
                "env" => "test",
+               "result" => ~s({:ok, "This cannot be encoded to JSON"}),
+               "user" => ~s(%JSONLogFormatterTest.User{name: "Fernando"}),
+               "pid" => inspect(self()),
                "message" => "Hello world!"
              }
            ]

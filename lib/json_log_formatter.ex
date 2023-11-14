@@ -79,6 +79,10 @@ defmodule JSONLogFormatter do
     if Keyword.keyword?(metadata) do
       Enum.reduce(metadata, {%{}, []}, fn {key, value}, {formatted_metadata, error_messages} ->
         cond do
+          key == :file and is_list(value) ->
+            formatted_metadata = Map.put(formatted_metadata, key, List.to_string(value))
+            {formatted_metadata, error_messages}
+
           key in @reserved_keys ->
             error_message = "Logger metadata contains reserved key #{inspect(key)}"
             {formatted_metadata, [error_message | error_messages]}
@@ -89,14 +93,13 @@ defmodule JSONLogFormatter do
             {formatted_metadata, [error_message | error_messages]}
 
           match?({:error, _}, Jason.encode(value)) ->
-            error_message =
-              "Logger metadata contains a non JSON serializable value in key #{inspect(key)}"
-
-            {formatted_metadata, [error_message | error_messages]}
+            inspected_value = inspect(value, printable_limit: :infinity, limit: :infinity)
+            formatted_metadata = Map.put(formatted_metadata, key, inspected_value)
+            {formatted_metadata, error_messages}
 
           true ->
             formatted_metadata = Map.put(formatted_metadata, key, value)
-            {formatted_metadata, error_messages}
+            {Map.put(formatted_metadata, key, value), error_messages}
         end
       end)
     else
