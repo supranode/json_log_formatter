@@ -10,10 +10,10 @@ defmodule JSONLogFormatterTest do
       pid: self()
     ]
 
-    assert format(:info, "Hello world!", {{2019, 10, 11}, {13, 24, 56, 0}}, metadata) == [
+    assert format(:info, "Hello world!", {{2019, 10, 11}, {13, 24, 56, 123}}, metadata) == [
              %{
                "level" => "info",
-               "timestamp" => "2019-10-11T13:24:56Z",
+               "timestamp" => "2019-10-11T13:24:56.123Z",
                "expires_on" => "1987-05-06",
                "message" => "Hello world!",
                "file" => "test.exs",
@@ -38,10 +38,10 @@ defmodule JSONLogFormatterTest do
     message
     """
 
-    assert format(:info, message, {{2019, 10, 11}, {13, 24, 56, 0}}, metadata) == [
+    assert format(:info, message, {{2019, 10, 11}, {13, 24, 56, 882}}, metadata) == [
              %{
                "level" => "info",
-               "timestamp" => "2019-10-11T13:24:56Z",
+               "timestamp" => "2019-10-11T13:24:56.882Z",
                "message" => "This is a",
                "file" => "test.exs",
                "function" => "test/2",
@@ -50,7 +50,7 @@ defmodule JSONLogFormatterTest do
              },
              %{
                "level" => "info",
-               "timestamp" => "2019-10-11T13:24:56Z",
+               "timestamp" => "2019-10-11T13:24:56.882Z",
                "message" => "multi-line",
                "file" => "test.exs",
                "function" => "test/2",
@@ -59,7 +59,7 @@ defmodule JSONLogFormatterTest do
              },
              %{
                "level" => "info",
-               "timestamp" => "2019-10-11T13:24:56Z",
+               "timestamp" => "2019-10-11T13:24:56.882Z",
                "message" => "message",
                "file" => "test.exs",
                "function" => "test/2",
@@ -68,7 +68,7 @@ defmodule JSONLogFormatterTest do
              },
              %{
                "level" => "info",
-               "timestamp" => "2019-10-11T13:24:56Z",
+               "timestamp" => "2019-10-11T13:24:56.882Z",
                "message" => "",
                "file" => "test.exs",
                "function" => "test/2",
@@ -83,8 +83,8 @@ defmodule JSONLogFormatterTest do
   end
 
   test "format/4 formats timestamps using the ISO 8601:2004 format" do
-    assert [%{"timestamp" => "2019-10-11T13:24:56Z"}] =
-             format(:info, "Hello world!", {{2019, 10, 11}, {13, 24, 56, 3000}})
+    assert [%{"timestamp" => "2019-10-11T13:24:56.003Z"}] =
+             format(:info, "Hello world!", {{2019, 10, 11}, {13, 24, 56, 3}})
   end
 
   test "format/4 formats metadata" do
@@ -100,7 +100,7 @@ defmodule JSONLogFormatterTest do
     assert format(:notice, "Hello world!", {{2019, 10, 11}, {13, 24, 56, 0}}, metadata) == [
              %{
                "level" => "notice",
-               "timestamp" => "2019-10-11T13:24:56Z",
+               "timestamp" => "2019-10-11T13:24:56.000Z",
                "env" => "test",
                "params" => %{"ids" => [1, 2], "avg" => 3.4, "primary" => true},
                "message" => "Hello world!",
@@ -127,10 +127,10 @@ defmodule JSONLogFormatterTest do
       pid: self()
     ]
 
-    assert format(:info, "Hello world!", {{2019, 10, 11}, {13, 24, 56, 0}}, metadata) == [
+    assert format(:info, "Hello world!", {{2019, 10, 11}, {13, 24, 56, 42}}, metadata) == [
              %{
                "level" => "info",
-               "timestamp" => "2019-10-11T13:24:56Z",
+               "timestamp" => "2019-10-11T13:24:56.042Z",
                "env" => "test",
                "result" => ~s({:ok, "This cannot be encoded to JSON"}),
                "user" => ~s(%JSONLogFormatterTest.User{name: "Fernando"}),
@@ -143,16 +143,16 @@ defmodule JSONLogFormatterTest do
   test "format/4 logs an error message if the metadata contains reserved keys" do
     metadata = [test: "This is a valid key", message: "This is a reserved key"]
 
-    assert format(:info, "Hello world!", {{2019, 10, 11}, {13, 24, 56, 0}}, metadata) == [
+    assert format(:info, "Hello world!", {{2019, 10, 11}, {13, 24, 56, 572}}, metadata) == [
              %{
                "level" => "error",
-               "timestamp" => "2019-10-11T13:24:56Z",
+               "timestamp" => "2019-10-11T13:24:56.572Z",
                "test" => "This is a valid key",
                "message" => "Logger metadata contains reserved key :message"
              },
              %{
                "level" => "info",
-               "timestamp" => "2019-10-11T13:24:56Z",
+               "timestamp" => "2019-10-11T13:24:56.572Z",
                "test" => "This is a valid key",
                "message" => "Hello world!"
              }
@@ -162,17 +162,17 @@ defmodule JSONLogFormatterTest do
   test "format/4 logs an error message if the metadata contains duplicated keys" do
     metadata = [name: "Fer", name: "Fernando", env: "test"]
 
-    assert format(:info, "Hello world!", {{2019, 10, 11}, {13, 24, 56, 0}}, metadata) == [
+    assert format(:info, "Hello world!", {{2019, 10, 11}, {13, 24, 56, 741}}, metadata) == [
              %{
                "level" => "error",
-               "timestamp" => "2019-10-11T13:24:56Z",
+               "timestamp" => "2019-10-11T13:24:56.741Z",
                "env" => "test",
                "name" => "Fernando",
                "message" => "Logger metadata contains duplicated key :name"
              },
              %{
                "level" => "info",
-               "timestamp" => "2019-10-11T13:24:56Z",
+               "timestamp" => "2019-10-11T13:24:56.741Z",
                "env" => "test",
                "name" => "Fernando",
                "message" => "Hello world!"
@@ -181,15 +181,15 @@ defmodule JSONLogFormatterTest do
   end
 
   test "format/4 logs an error message if the metadata is not a keyword list" do
-    assert format(:info, "Hello world!", {{2019, 10, 11}, {13, 24, 56, 0}}, :invalid) == [
+    assert format(:info, "Hello world!", {{2019, 10, 11}, {13, 24, 56, 7}}, :invalid) == [
              %{
                "level" => "error",
-               "timestamp" => "2019-10-11T13:24:56Z",
+               "timestamp" => "2019-10-11T13:24:56.007Z",
                "message" => "Logger metadata is not a keyword list"
              },
              %{
                "level" => "info",
-               "timestamp" => "2019-10-11T13:24:56Z",
+               "timestamp" => "2019-10-11T13:24:56.007Z",
                "message" => "Hello world!"
              }
            ]

@@ -29,9 +29,9 @@ defmodule JSONLogFormatter do
   If the message contains multiple lines, each line will be
   returned as a separated log message.
 
-  Timestamps are in UTC with a precision of seconds, and they are
-  expressed following the ISO 8601:2004 format. Check the module
-  documentation for more information.
+  Timestamps are in UTC with a precision of milliseconds, and
+  they are expressed following the ISO 8601:2004 format.
+  Check the module documentation for more information.
 
   The keys `:level`, `:timestamp`, and `:message` are reserved and
   they cannot be included in the given `metadata`; otherwise an error
@@ -68,9 +68,9 @@ defmodule JSONLogFormatter do
     [Jason.encode!(log_entry), "\n"]
   end
 
-  defp format_timestamp({date, {hour, minute, second, _}}) do
+  defp format_timestamp({date, {hour, minute, second, millisecond}}) do
     {date, {hour, minute, second}}
-    |> NaiveDateTime.from_erl!()
+    |> NaiveDateTime.from_erl!({millisecond * 1000, 3})
     |> DateTime.from_naive!("Etc/UTC")
     |> DateTime.to_iso8601()
   end
