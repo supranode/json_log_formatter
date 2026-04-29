@@ -1,6 +1,6 @@
 # JsonLogFormatter
 
-A JSON one-liner log formatter.
+A JSON one-line log formatter.
 
 This package is based on [Elixir's Logger](https://hexdocs.pm/logger).
 

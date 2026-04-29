@@ -1,14 +1,14 @@
 defmodule JSONLogFormatter do
   @moduledoc """
-  A JSON one-liner log formatter.
+  A JSON one-line log formatter.
 
   To enable it, configure the console backend (or any other `Logger`
-  backend you are using) to format the logs using this module:
+  backend in use) to use this module for formatting:
 
       config :logger, :default_formatter,
         format: {#{inspect(__MODULE__)}, :format}
 
-  The formatter expects the timestamps to be in UTC. The `Logger`
+  The formatter expects timestamps in UTC, so `Logger`
   should be configured accordingly:
 
       config :logger, :default_formatter, utc_log: true
@@ -26,24 +26,23 @@ defmodule JSONLogFormatter do
   @doc """
   Formats a log message as a JSON one-liner.
 
-  If the message contains multiple lines, each line will be
-  returned as a separated log message.
+  If the message contains multiple lines, each line is
+  emitted as a separated log message.
 
-  Timestamps are in UTC with a precision of milliseconds, and
-  they are expressed following the ISO 8601:2004 format.
-  Check the module documentation for more information.
+  Timestamps are in UTC with millisecond precision and
+  are formatted according to the ISO 8601:2004 standard.
+  See the module documentation for more information.
 
   The keys `:level`, `:timestamp`, and `:message` are reserved and
-  they cannot be included in the given `metadata`; otherwise an error
-  message will be included as an additional log message in the final
-  output.
+  must not be included in the given `metadata`. If they are present,
+  an error message is emitted as an additional log message.
 
-  Additional error messages may be included in the final output if
-  the given `metadata` is not a keyword list, or if it contains
-  duplicated keys or keys with multi-line strings.
+  Additional error log messages may also be emitted if the
+  given `metadata` is not a keyword list, contains duplicate keys, or
+  includes values with multi-line strings.
 
   If for any reason the message cannot be formatted as a JSON
-  one-liner, an error message will be returned as final output.
+  one-liner, an additional error log message is emitted.
   """
   @spec format(Logger.level(), IO.chardata(), Logger.Formatter.date_time_ms(), keyword) ::
           IO.chardata()
