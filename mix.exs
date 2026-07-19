@@ -9,7 +9,7 @@ defmodule JsonLogFormatter.MixProject do
       app: :json_log_formatter,
       description: "A JSON one-liner log formatter",
       version: @version,
-      elixir: "~> 1.15",
+      elixir: "~> 1.18",
       deps: deps(),
       package: package(),
       docs: docs()
