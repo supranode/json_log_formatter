@@ -1,4 +1,4 @@
-defmodule JsonLogFormatter.MixProject do
+defmodule JSONLogFormatter.MixProject do
   use Mix.Project
 
   @version "1.0.0"
