@@ -1,18 +1,20 @@
-# JsonLogFormatter
+# JSONLogFormatter
 
 A JSON one-line log formatter for [Elixir's Logger](https://hexdocs.pm/logger).
 
 ## Installation
 
-Add `json_log_formatter` to the project's dependencies in the `mix.exs` file:
+Add `:json_log_formatter` to the project's dependencies in the `mix.exs` file:
 
 ```elixir
 def deps do
   [
-    {:json_log_formatter, "~> 1.0", git: "git@github.com:supranode/json_log_formatter.git"}
+    {:json_log_formatter, "~> 1.0.0"}
   ]
 end
 ```
+
+And then fetch your project's dependencies: `mix deps.get`
 
 ## Usage
 
@@ -52,3 +54,11 @@ config :json_log_formatter, split_multiline_messages: true
 ```
 
 See the `JSONLogFormatter` module documentation for more details.
+
+## Contributing
+
+Bug reports and pull requests are welcome on GitHub at https://github.com/supranode/json_log_formatter.
+
+## Copyright and License
+
+`JSONLogFormatter` source code is licensed under the [MIT License](LICENSE).
