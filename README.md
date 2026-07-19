@@ -1,10 +1,8 @@
 # JsonLogFormatter
 
-A JSON one-line log formatter.
+A JSON one-line log formatter for [Elixir's Logger](https://hexdocs.pm/logger).
 
-This package is based on [Elixir's Logger](https://hexdocs.pm/logger).
-
-## Getting started
+## Installation
 
 Add `json_log_formatter` to the project's dependencies in the `mix.exs` file:
 
@@ -16,12 +14,41 @@ def deps do
 end
 ```
 
-And fetch the project's dependencies:
+## Usage
 
-```shell
-$ mix deps.get
+Configure the console backend (or any other `Logger` backend in use)
+to use this module for formatting:
+
+```elixir
+config :logger, :default_formatter, format: {JSONLogFormatter, :format}
 ```
 
-## Documentation
+The formatter expects timestamps in UTC, so `Logger` should be
+configured accordingly:
 
-TODO Link to documentation.
+```elixir
+config :logger, :default_formatter, utc_log: true
+```
+
+It's also recommended to disable colors:
+
+```elixir
+config :logger, :default_formatter, colors: [enabled: false]
+```
+
+Metadata values that cannot be encoded to JSON are rendered via
+`inspect/2`. The options passed to `inspect/2` can be configured with:
+
+```elixir
+config :json_log_formatter, inspect: [limit: 50, printable_limit: 4096]
+```
+
+Multi-line messages are emitted as a single JSON entry by default,
+with newlines escaped in the `message` field. To split each line
+into a separate log entry instead, configure:
+
+```elixir
+config :json_log_formatter, split_multiline_messages: true
+```
+
+See the `JSONLogFormatter` module documentation for more details.
