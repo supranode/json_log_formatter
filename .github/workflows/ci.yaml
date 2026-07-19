@@ -1,6 +1,10 @@
 name: CI
 
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  schedule:
+    - cron: '0 5 * * *'
 
 permissions:
   contents: read
@@ -13,9 +17,17 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - erlang_otp: 25.3.2.5
-            elixir: 1.15.4
+          - erlang_otp: '29.0'
+            elixir: 'main'
+          - erlang_otp: '28.5'
+            elixir: '1.19.5'
             check: true
+          - erlang_otp: '27.3.4.11'
+            elixir: '1.18.4'
+          - erlang_otp: '27.3.4.11'
+            elixir: '1.17.3'
+          - erlang_otp: '26.2.5.20'
+            elixir: '1.16.3'
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -24,6 +36,7 @@ jobs:
         with:
           otp-version: ${{ matrix.erlang_otp }}
           elixir-version: ${{ matrix.elixir }}
+          version-type: strict
       - name: Install dependencies
         run: |
           mix local.hex --force
