@@ -2,7 +2,7 @@ defmodule JsonLogFormatter.MixProject do
   use Mix.Project
 
   @version "1.0.0"
-  @source_url "https://github.com/supranode/json_log_formatter"
+  @scm_url "https://github.com/supranode/json_log_formatter"
 
   def project do
     [
@@ -16,32 +16,39 @@ defmodule JsonLogFormatter.MixProject do
     ]
   end
 
-  # Run "mix help compile.app" to learn about applications.
+  def cli do
+    [
+      preferred_envs: [docs: :docs]
+    ]
+  end
+
   def application do
     [
       extra_applications: [:logger]
     ]
   end
 
-  # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
       {:jason, "~> 1.4"},
-      {:ex_doc, ">= 0.0.0", only: :dev}
+      {:ex_doc, "~> 0.40.3", only: :docs}
     ]
   end
 
   defp package do
     [
-      organization: "supranode",
-      links: %{"GitHub" => @source_url}
+      maintainers: ["Fernando Tapia Rico"],
+      licenses: ["MIT"],
+      links: %{"GitHub" => @scm_url},
+      files: ~w(mix.exs README.md lib)
     ]
   end
 
   defp docs do
     [
       source_ref: "v#{@version}",
-      source_url: @source_url
+      main: "JSONLogFormatter",
+      source_url: @scm_url
     ]
   end
 end
